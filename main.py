@@ -3,7 +3,6 @@ import json
 from fractions import Fraction
 from functools import lru_cache
 from itertools import chain, starmap
-from math import ceil, floor
 
 import pygame
 import sys
@@ -375,41 +374,41 @@ def _get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: 
         if left.is_lower == (y1 > 0):
             if left.ratio < right.ratio:
                 if y1 > 0:
-                    return (floor(max(left1, x_min)), floor(min(right1, x_max))),
+                    return (int(max(left1, x_min)), int(min(right1, x_max))),
                 else:
-                    return (floor(max(right1 + 1, x_min)), floor(min(left1 + 1, x_max))),
+                    return (int(max(right1 + 1, x_min)), int(min(left1 + 1, x_max))),
             elif y1 > 0:
                 if right1 < x_min:
                     if left1 > x_max:
                         return ()
                     else:
-                        return (floor(left1), x_max),
+                        return (int(left1), x_max),
                 elif left1 > x_max:
-                    return (x_min, floor(right1)),
+                    return (x_min, int(right1)),
                 else:
-                    return (x_min, floor(right1)), (floor(left1), x_max)
+                    return (x_min, int(right1)), (int(left1), x_max)
             elif left1 < x_min:
                 if right1 > x_max:
                     return ()
                 else:
-                    return (floor(left1), x_max),
+                    return (int(left1), x_max),
             elif right1 > x_max:
-                return (x_min, floor(left1)),
+                return (x_min, int(left1)),
             else:
-                return (floor(left1), x_max), (x_min, floor(left1))
+                return (int(left1), x_max), (x_min, int(left1))
         elif left.ratio < right.ratio:
             return ()
         else:
             return (x_min, x_max),
     elif left.is_lower:
         if y1 > 0:
-            return (ceil(max(left1, x_min)), x_max),
+            return (int(max(left1, x_min)), x_max),
         else:
-            return (floor(max(right1, x_min)), x_max),
+            return (int(max(right1, x_min)), x_max),
     elif y1 > 0:
-        return (x_min, ceil(min(right1, x_max))),
+        return (x_min, int(min(right1, x_max))),
     else:
-        return (x_min, floor(min(left1, x_max))),
+        return (x_min, int(min(left1, x_max))),
 
 
 def get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
