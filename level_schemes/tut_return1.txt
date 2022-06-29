@@ -1,0 +1,26 @@
+ortal neighbors
+a11 empty 2a12 3a21 wall wall
+a12 goal 2a13 3a22 0a11 wall
+a13 glass 2a14 3a23 0a12 wall
+a14 player 2a15 3a24 0a13 wall
+a15 empty wall 3a25 0a14 wall
+a21 empty 2a22 3a31 wall 1a11
+a22 glass 2a23 3a32 0a21 1a12
+a23 glass 2a24 3a33 0a22 1a13
+a24 glass 2a25 3a34 0a23 1a14
+a25 empty wall 3a35 0a24 1a15
+a31 empty 2a32 3a41 wall 1a21
+a32 glass 2a33 3a42 0a31 1a22
+a33 portal 2a34 3a43 0a32 1a23
+a34 glass 2a35 3a44 0a33 1a24
+a35 empty wall 3a45 0a34 1a25
+a41 empty 2a42 3a51 wall 1a31
+a42 glass 2a43 3a52 0a41 1a32
+a43 glass 2a44 3a53 0a42 1a33
+a44 glass 2a45 3a54 0a43 1a34
+a45 empty wall 3a55 0a44 1a35
+a51 empty 2a52 wall wall 1a41
+a52 empty 2a53 wall 0a51 1a42
+a53 empty 2a54 wall 0a52 1a43
+a54 empty 2a55 wall 0a53 1a44
+a55 empty wall wall 0a54 1a45

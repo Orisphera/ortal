@@ -1,0 +1,2 @@
+An edge case that the game wasn't programmed to
+handle correctly but seems to do so.

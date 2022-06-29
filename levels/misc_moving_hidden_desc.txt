@@ -1,0 +1,3 @@
+Moving tutorial with the other location of the moved
+portal hidden by another portal
+(it was decided that it doesn't really add anything new)

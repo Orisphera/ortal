@@ -1,0 +1,71 @@
+[
+  {
+    "name": "Play",
+    "desc_fn": "play_desc.txt",
+    "type": "folder",
+    "contents": [
+      {
+        "name": "Tutorial",
+        "desc_fn": "tutorial_desc.txt",
+        "type": "folder",
+        "contents": [
+          {
+            "name": "Movement",
+            "desc_fn": "tut_movement_desc.txt",
+            "type": "level",
+            "fn": "tut_movement.txt"
+          },
+          {
+            "name": "Portal?",
+            "desc_fn": "tut_portal_desc.txt",
+            "type": "level",
+            "fn": "tut_portal.txt"
+          },
+          {
+            "name": "Return",
+            "desc_fn": "tut_return_desc.txt",
+            "type": "level",
+            "fn": "tut_return.txt"
+          },
+          {
+            "name": "Moving it",
+            "desc_fn": "tut_moving_desc.txt",
+            "type": "level",
+            "fn": "tut_moving.txt"
+          }
+        ]
+      },
+      {
+        "name": "Miscellaneous",
+        "desc_fn": "misc_desc.txt",
+        "type": "folder",
+        "contents": [
+          {
+            "name": "Moving (hidden)",
+            "desc_fn": "misc_moving_hidden_desc.txt",
+            "type": "level",
+            "fn": "misc_moving_hidden.txt"
+          },
+          {
+            "name": "Playground 1",
+            "desc_fn": "misc_pg1_desc.txt",
+            "type": "level",
+            "fn": "misc_pg1.txt"
+          },
+          {
+            "name": "Playground 2",
+            "desc_fn": "misc_pg2_desc.txt",
+            "type": "level",
+            "fn": "misc_pg2.txt"
+          },
+          {
+            "name": "1 block",
+            "desc_fn": "misc_1b_desc.txt",
+            "type": "level",
+            "fn": "misc_1b.txt"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,26 @@
+ortal neighbors
+b11 empty 2b12 3b21 wall wall
+b12 empty 2b13 3b22 0b11 wall
+b13 empty 2b14 3b23 0b12 wall
+b14 empty 2b15 3b24 0b13 wall
+b15 empty wall 3b25 0b14 wall
+b21 empty 2b22 3b31 wall 1b11
+b22 glass 2b23 3b32 0b21 1b12
+b23 glass 2b24 3b33 0b22 1b13
+b24 glass 2b25 3b34 0b23 1b14
+b25 empty wall 3b35 0b24 1b15
+b31 empty 2b32 3b41 wall 1b21
+b32 glass 2b33 3b42 0b31 1b22
+b33 portal 2b34 3b43 0b32 1b23
+b34 glass 2b35 3b44 0b33 1b24
+b35 empty wall 3b45 0b34 1b25
+b41 empty 2b42 3b51 wall 1b31
+b42 glass 2b43 3b52 0b41 1b32
+b43 glass 2b44 3b53 0b42 1b33
+b44 glass 2b45 3b54 0b43 1b34
+b45 empty wall 3b55 0b44 1b35
+b51 empty 2b52 wall wall 1b41
+b52 empty 2b53 wall 0b51 1b42
+b53 empty 2b54 wall 0b52 1b43
+b54 empty 2b55 wall 0b53 1b44
+b55 empty wall wall 0b54 1b45

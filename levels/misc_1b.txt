@@ -1,0 +1,5 @@
+ortal neighbors
+a empty 2a 3b 0a wall
+b player 2b 3c 0b 1a
+c empty 2c 3d 0c 1b
+d goal 2d wall 0d 1c

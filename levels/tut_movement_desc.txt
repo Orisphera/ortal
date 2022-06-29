@@ -1,0 +1,5 @@
+Just a simple level.
+Nothing interesting yet.
+Glass with dot = goal.
+The screen is centered at the player.
+You can't see parts that are not visible by the player.

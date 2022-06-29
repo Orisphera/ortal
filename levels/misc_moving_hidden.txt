@@ -1,0 +1,35 @@
+ortal neighbors
+t1_1 empty 6t1_2 3t2_1 wall wall
+t1_2 portal 2t1_3 3t2_2 0t8_1 1t7_2 2t8_3 3t9_2 0t1_1 wall
+t1_3 player wall 3t2_3 0t1_2 wall
+t2_1 glass 2t9_2 3t3_1 wall 1t1_1
+t2_2 empty 2t2_3 3t3_2 0t9_1 1t1_2
+t2_3 glass wall 3t3_3 0t2_2 1t1_3
+t3_1 glass 2t10_2 3t4_1 wall 1t2_1
+t3_2 empty 2t3_3 3t4_2 0t10_1 1t2_2
+t3_3 empty wall 3t4_3 0t3_2 1t2_3
+t4_1 glass 2t11_2 3t5_1 wall 1t3_1
+t4_2 glass 2t4_3 7t5_2 0t11_1 1t3_2
+t4_3 empty wall 3t5_3 0t4_2 1t3_3
+t5_1 glass 2t5_2 3t6_1 wall 1t4_1
+t5_2 portal 2t5_3 3t6_2 0t5_1 1t11_2 2t12_3 wall 0t12_1 1t4_2
+t5_3 empty wall 3t6_3 0t5_2 1t4_3
+t6_1 glass 2t6_2 3t7_1 wall 1t5_1
+t6_2 glass 2t6_3 3t7_2 0t6_1 1t5_2
+t6_3 empty wall 3t7_3 0t6_2 1t5_3
+t7_1 glass 2t7_2 3t8_1 wall 1t6_1
+t7_2 empty 2t7_3 3t1_2 0t7_1 1t6_2
+t7_3 empty wall 3t8_3 0t7_2 1t6_3
+t8_1 empty 2t1_2 3t9_1 wall 1t7_1
+t8_3 glass wall 3t9_3 4t1_2 1t7_3
+t9_1 glass 2t2_2 3t10_1 wall 1t8_1
+t9_2 empty 2t9_3 3t10_2 0t2_1 5t1_2
+t9_3 goal wall 3t10_3 0t9_2 1t8_3
+t10_1 glass 2t3_2 3t11_1 wall 1t9_1
+t10_2 empty 2t10_3 3t11_2 0t3_1 1t9_2
+t10_3 empty wall 3t11_3 0t10_2 1t9_3
+t11_1 glass 2t4_2 3t12_1 wall 1t10_1
+t11_2 glass 2t11_3 3t5_2 0t4_1 1t10_2
+t11_3 empty wall 3t12_3 0t11_2 1t10_3
+t12_1 glass 6t5_2 wall wall 1t11_1
+t12_3 empty wall wall 4t5_2 1t11_3

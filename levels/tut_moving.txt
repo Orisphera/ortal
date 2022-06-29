@@ -1,0 +1,9 @@
+ortal neighbors
+t1_1 empty 2t1_2 3t2_1 wall 1t2_1
+t1_2 portal 2t1_3 3t2_2 0t1_1 1t2_2 2t3_3 wall 0t3_1 wall
+t1_3 player wall 3t2_3 0t1_2 wall
+t2_1 glass 2t2_2 3t1_1 wall 1t1_1
+t2_2 empty 2t2_3 3t1_2 0t2_1 1t1_2
+t2_3 glass wall 3t3_3 0t2_2 1t1_3
+t3_1 empty 6t1_2 wall wall wall
+t3_3 goal wall wall 4t1_2 1t2_3
