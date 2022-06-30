@@ -525,8 +525,9 @@ def move_player(player, all_set, on_win):
             tile.neighbors = tile.new_neighbors
             all_set.add(tile)
         tile.new_neighbors = None
-    for tile in remove_list:
-        all_set.remove(tile)
+    if success:
+        for tile in remove_list:
+            all_set.remove(tile)
     verify(all_set)
     return success
 
