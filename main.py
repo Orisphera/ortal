@@ -264,7 +264,7 @@ class TileRotation:
             if neighbor.get_neighbor(0) != self:
                 raise ValueError(f'incorrect connectivity: {self} -> {neighbor} -> {neighbor.get_neighbor(0)}')
             if not (all_set is None or neighbor.tile in all_set):
-                raise ValueError(f'removed {neighbor.tile} tile used from {self.tile}')
+                raise ValueError(f'removed tile {neighbor.tile} used from {self.tile}')
         neighbor1 = self.get_neighbor(1)
         if not isinstance(neighbor1.tile, WallTile):
             if neighbor1 == self:
