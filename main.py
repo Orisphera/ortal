@@ -479,12 +479,12 @@ def render(screen_settings, player):
     render_part(screen_settings, player, 0, 0, Ray(1, 0), Ray(1, 0))
 
 
-def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, on_win=lambda: None):
+def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_player, on_win=lambda: None):
     if tile.tile.is_moving:
         return False
     tile.tile.is_moving = True
     moving_list.append(tile.tile)
-    if not isinstance(tile.tile, (EmptyTile, PlayerTile, PortalTile)):
+    if not isinstance(tile.tile, (PlayerTile if is_player else (EmptyTile, PortalTile))):
         return False
     next_tile1 = tile.get_neighbor(2)
     next_tile2 = tile.get_neighbor(6)
@@ -505,18 +505,18 @@ def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, on_win
     if isinstance(tile.tile, PlayerTile):
         if isinstance(next_tile1.tile, GoalTile):
             on_win()
-        return move_tile(next_tile1, changed_list, moving_list, remove_list)
+        return move_tile(next_tile1, changed_list, moving_list, remove_list, False)
     tile.set_neighbor_mutual(3, next_tile1.get_neighbor(-1), changed_list)
     tile.set_neighbor_mutual(5, next_tile2.get_neighbor(1), changed_list)
-    return (move_tile(next_tile1, changed_list, moving_list, remove_list) and
-            move_tile(next_tile2, changed_list, moving_list, remove_list))
+    return (move_tile(next_tile1, changed_list, moving_list, remove_list, False) and
+            move_tile(next_tile2, changed_list, moving_list, remove_list, False))
 
 
 def move_player(player, all_set, on_win):
     changed_list = []
     moving_list = []
     remove_list = []
-    success = move_tile(player, changed_list, moving_list, remove_list, on_win)
+    success = move_tile(player, changed_list, moving_list, remove_list, True, on_win)
     for tile in moving_list:
         tile.is_moving = False
     for tile in changed_list:

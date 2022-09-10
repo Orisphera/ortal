@@ -1,0 +1,2 @@
+A level with two player tiles.
+Use the space bar to switch

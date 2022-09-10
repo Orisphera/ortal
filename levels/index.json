@@ -32,6 +32,12 @@
             "desc_fn": "tut_moving_desc.txt",
             "type": "level",
             "fn": "tut_moving.txt"
+          },
+          {
+            "name": "Multiple players",
+            "desc_fn": "tut_players_desc.txt",
+            "type": "level",
+            "fn": "tut_players.txt"
           }
         ]
       },
@@ -63,6 +69,12 @@
             "desc_fn": "misc_1b_desc.txt",
             "type": "level",
             "fn": "misc_1b.txt"
+          },
+          {
+            "name": "1 block v2",
+            "desc_fn": "misc_1b_v2_desc.txt",
+            "type": "level",
+            "fn": "misc_1b_v2.txt"
           }
         ]
       }
