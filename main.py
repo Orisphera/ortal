@@ -286,7 +286,7 @@ def load_level(fn: str):
     with open(fn) as f:
         version_line = f_input(f)
         if version_line == 'ortal neighbors':
-            players = []
+            players: list[TileRotation] = []
             wall = TileRotation(WallTile('wall'), 0)
             tiles = dict()
             neighbors_names = dict()
@@ -300,7 +300,7 @@ def load_level(fn: str):
                                     'player': PlayerTile,
                                     'goal': GoalTile}[tile_type](tile_name)
                 if isinstance(tiles[tile_name], PlayerTile):
-                    players.append(tiles[tile_name])
+                    players.append(TileRotation(tiles[tile_name], 0))
                 neighbors_names[tile_name] = tile_data.split()
             for tile_name, tile in tiles.items():
                 tile.neighbors = [TileRotation(tiles[neighbor_name[1:]], int(neighbor_name[0]))
@@ -308,8 +308,7 @@ def load_level(fn: str):
                                   for neighbor_name in neighbors_names[tile_name]]
             for tile in tiles.values():
                 tile.verify()
-            player, = players
-            return TileRotation(player, 0), tiles.values()
+            return players, tiles.values()
         else:
             raise ValueError('unknown level format')
 
@@ -545,7 +544,9 @@ def play(screen, level_fn):
                                      player_y=VIEW_DIST)
 
     player_won = False
-    player, tiles_list = load_level(level_fn)
+    players, tiles_list = load_level(level_fn)
+    player_i = 0
+    player = players[player_i]
     tiles_set = set(tiles_list)
     changed = True
     while True:
@@ -578,6 +579,10 @@ def play(screen, level_fn):
                 elif event.key in (pygame.K_d, pygame.K_RIGHT):
                     if move_player(player.rotate(3), tiles_set, on_win):
                         changed = True
+                elif event.key == pygame.K_SPACE:
+                    player_i = (player_i + 1) % len(players)
+                    player = players[player_i]
+                    changed = True
                 if player_won:
                     win_screen(screen)
                     return
