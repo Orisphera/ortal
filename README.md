@@ -21,6 +21,13 @@ pip install pygame
 ```
 Note that you shouldn't run `pip` with root privileges.
 
+You can download Ortal with
+```bash
+git clone https://github.com/orisphera/ortal
+cd ortal
+```
+or by clicking on the green "Code" and then downloading and unpacking ZIP 
+
 Run the game by running the main.py file:
 ```bash
 python3 main.py
