@@ -1,3 +1,4 @@
+import random
 from dataclasses import dataclass
 import json
 from fractions import Fraction
@@ -152,7 +153,7 @@ class Tile:
         return self.name
 
     @staticmethod
-    def get_texture(size: int):
+    def get_texture(size: int, rot: int = 0) -> pygame.Surface:
         return pygame.Surface((size, size))
 
     def verify(self, all_set=None):
@@ -165,8 +166,8 @@ class Tile:
 class EmptyTile(Tile):
     @staticmethod
     @lru_cache(None)
-    def get_texture(size):
-        ans = Tile.get_texture(size)
+    def get_texture(size, rot=0):
+        ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#101010'))
         return ans
 
@@ -174,8 +175,8 @@ class EmptyTile(Tile):
 class GlassTile(Tile):
     @staticmethod
     @lru_cache(None)
-    def get_texture(size):
-        ans = Tile.get_texture(size)
+    def get_texture(size, rot=0):
+        ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#181818'))
         pygame.draw.rect(ans, pygame.Color('#FFFFFF'), ans.get_rect(), 2)
         return ans
@@ -184,9 +185,18 @@ class GlassTile(Tile):
 class WallTile(Tile):
     @staticmethod
     @lru_cache(None)
-    def get_texture(size):
-        ans = Tile.get_texture(size)
-        ans.fill(pygame.Color("#772953"))
+    def get_texture(size, rot=0):
+        ans = pygame.Surface((size, size))
+        ans.fill(pygame.Color("#000000"))
+        pygame.draw.line(ans, pygame.Color("#772953"), (0, 0), (size, 0))
+        y = 0
+        offset_rng = random.Random(1)
+        for c in range(128, 0, -40):
+            for x in range(offset_rng.randint(-10, 0), size, 10):
+                pygame.draw.rect(ans, (c, c, c), pygame.Rect(x + 1, y + 1, 7, 3), 0, 1)
+            y += 5
+        ans = pygame.transform.rotate(ans, 90 * rot)
+        # ans.fill(pygame.Color("#772953"))
         return ans
 
     see_through = False
@@ -198,8 +208,8 @@ class PortalTile(Tile):
 
     @staticmethod
     @lru_cache(None)
-    def get_texture(size):
-        ans = Tile.get_texture(size)
+    def get_texture(size, rot=0):
+        ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#000000'))
         pygame.draw.rect(ans, pygame.Color('#FFFFFF'), ans.get_rect(), 2)
         pygame.draw.circle(ans, pygame.Color('#1010FF'), (size // 2, size // 2), size // 2, 2)
@@ -209,8 +219,8 @@ class PortalTile(Tile):
 class PlayerTile(Tile):
     @staticmethod
     @lru_cache(None)
-    def get_texture(size):
-        ans = Tile.get_texture(size)
+    def get_texture(size, rot=0):
+        ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#772953'))
         pygame.draw.rect(ans, pygame.Color('#FFFFFF'), ans.get_rect(), 2)
         pygame.draw.circle(ans, pygame.Color('#000000'), (size // 2, size // 2), 5)
@@ -220,8 +230,8 @@ class PlayerTile(Tile):
 class GoalTile(Tile):
     @staticmethod
     @lru_cache(None)
-    def get_texture(size):
-        ans = Tile.get_texture(size)
+    def get_texture(size, rot=0):
+        ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#202020'))
         pygame.draw.rect(ans, pygame.Color('#F0F0F0'), ans.get_rect(), 2)
         pygame.draw.circle(ans, pygame.Color('#FFFFFF'), (size // 2, size // 2), 5)
@@ -420,7 +430,7 @@ def get_range(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py:
     return chain.from_iterable(starmap(range, get_range_bounds(offset_x, offset_y, left, right, py, x_min, x_max)))
 
 
-def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: int, left0: Ray, right0: Ray):
+def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: int, left0: Ray, right0: Ray, rot: int = 0):
     x_on_screen = screen_settings.player_x + x
     y_on_screen = screen_settings.player_y + y
     if x or y:
@@ -443,7 +453,7 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
     y_min = screen_settings.tile_size * y_on_screen
     y_max = y_min + screen_settings.tile_size
     offset_x, offset_y = screen_settings.offsets
-    if isinstance(tile.tile, WallTile):
+    if False and isinstance(tile.tile, WallTile):
         left_t = left.transpose()
         right_t = right.transpose()
         wall_c = pygame.Color('#772953')
@@ -460,19 +470,20 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
             for line_start, line_end in get_range_bounds(offset_x, offset_y, left, right, y_min, x_min, x_max):
                 pygame.draw.line(screen_settings.screen, wall_c, (line_start, y_min), (line_end, y_min))
         return
+    texture = tile.tile.get_texture(screen_settings.tile_size, rot)
     for pyr, pya in enumerate(range(y_min, y_max)):
         for pxa in get_range(offset_x, offset_y, left, right, pya, x_min, x_max):
-            screen_settings.screen.set_at((pxa, pya), tile.tile.get_texture(screen_settings.tile_size)
-                                          .get_at((pxa - screen_settings.tile_size * x_on_screen, pyr)))
+            screen_settings.screen.set_at((pxa, pya),
+                                          texture.get_at((pxa - screen_settings.tile_size * x_on_screen, pyr)))
     if tile.tile.see_through:
         if y >= 0:
-            render_part(screen_settings, tile.get_neighbor(0).rotate(2), x, y + 1, left, right)
+            render_part(screen_settings, tile.get_neighbor(0).rotate(2), x, y + 1, left, right, 0)
         if x >= 0:
-            render_part(screen_settings, tile.get_neighbor(1).rotate(1), x + 1, y, left, right)
+            render_part(screen_settings, tile.get_neighbor(1).rotate(1), x + 1, y, left, right, 1)
         if y <= 0:
-            render_part(screen_settings, tile.get_neighbor(2).rotate(0), x, y - 1, left, right)
+            render_part(screen_settings, tile.get_neighbor(2).rotate(0), x, y - 1, left, right, 2)
         if x <= 0:
-            render_part(screen_settings, tile.get_neighbor(3).rotate(3), x - 1, y, left, right)
+            render_part(screen_settings, tile.get_neighbor(3).rotate(3), x - 1, y, left, right, 3)
 
 
 def render(screen_settings, player):
