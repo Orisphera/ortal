@@ -75,6 +75,12 @@
             "desc_fn": "misc_1b_v2_desc.txt",
             "type": "level",
             "fn": "misc_1b_v2.txt"
+          },
+          {
+            "name": "1 block diagonal",
+            "desc_fn": "misc_1b_diag_desc.txt",
+            "type": "level",
+            "fn": "misc_1b_diag.txt"
           }
         ]
       }

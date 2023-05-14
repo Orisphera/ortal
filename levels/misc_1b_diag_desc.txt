@@ -1,0 +1,3 @@
+A level with a dimension compactified diagonally.
+The size of the compactified dimension, depending on
+the metric, can be 1, 2, or sqrt(2).

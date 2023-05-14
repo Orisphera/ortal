@@ -275,6 +275,7 @@ class TileRotation:
                 raise ValueError(f'incorrect connectivity: {self} -> {neighbor} -> {neighbor.get_neighbor(0)}')
             if not (all_set is None or neighbor.tile in all_set):
                 raise ValueError(f'removed tile {neighbor.tile} used from {self.tile}')
+#        return
         neighbor1 = self.get_neighbor(1)
         if not isinstance(neighbor1.tile, WallTile):
             if neighbor1 == self:
@@ -383,26 +384,11 @@ def _get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: 
         if left.is_lower == (y1 > 0):
             if left.ratio < right.ratio:
                 if y1 > 0:
-                    return (int(max(left1, x_min)), int(min(right1, x_max))),
+                    return (int(left1), int(right1)),
                 else:
-                    return (int(max(right1 + 1, x_min)), int(min(left1 + 1, x_max))),
+                    return (int(right1), int(left1)),
             elif y1 > 0:
-                if right1 < x_min:
-                    if left1 > x_max:
-                        return ()
-                    else:
-                        return (int(left1), x_max),
-                elif left1 > x_max:
-                    return (x_min, int(right1)),
-                else:
-                    return (x_min, int(right1)), (int(left1), x_max)
-            elif left1 < x_min:
-                if right1 > x_max:
-                    return ()
-                else:
-                    return (int(left1), x_max),
-            elif right1 > x_max:
-                return (x_min, int(left1)),
+                return (x_min, int(right1)), (int(left1), x_max)
             else:
                 return (int(left1), x_max), (x_min, int(left1))
         elif left.ratio < right.ratio:
@@ -411,19 +397,20 @@ def _get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: 
             return (x_min, x_max),
     elif left.is_lower:
         if y1 > 0:
-            return (int(max(left1, x_min)), x_max),
+            return (int(left1), x_max),
         else:
-            return (int(max(right1, x_min)), x_max),
+            return (int(right1), x_max),
     elif y1 > 0:
-        return (x_min, int(min(right1, x_max))),
+        return (x_min, int(right1)),
     else:
-        return (x_min, int(min(left1, x_max))),
+        return (x_min, int(left1)),
 
 
 def get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
     for line_start, line_end in _get_range_bounds(offset_x, offset_y, left, right, py, x_min, x_max):
-        if line_start < line_end:
-            yield line_start, line_end
+        line_start1, line_end1 = max(line_start, x_min), min(line_end, x_max)
+        if line_start1 < line_end1:
+            yield line_start1, line_end1
 
 
 def get_range(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
