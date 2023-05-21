@@ -459,9 +459,13 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
         return
     texture = tile.tile.get_texture(screen_settings.tile_size, rot)
     for pyr, pya in enumerate(range(y_min, y_max)):
-        for pxa in get_range(offset_x, offset_y, left, right, pya, x_min, x_max):
-            screen_settings.screen.set_at((pxa, pya),
-                                          texture.get_at((pxa - screen_settings.tile_size * x_on_screen, pyr)))
+        # for pxa in get_range(offset_x, offset_y, left, right, pya, x_min, x_max):
+        #     screen_settings.screen.set_at((pxa, pya),
+        #                                   texture.get_at((pxa - screen_settings.tile_size * x_on_screen, pyr)))
+        for start, end in get_range_bounds(offset_x, offset_y, left, right, pya, x_min, x_max):
+            screen_settings.screen.blit(texture,
+                                        (start, pya, end - start, 1),
+                                        (start - screen_settings.tile_size * x_on_screen, pyr, end - start, 1))
     if tile.tile.see_through:
         if y >= 0:
             render_part(screen_settings, tile.get_neighbor(0).rotate(2), x, y + 1, left, right, 0)
