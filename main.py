@@ -8,6 +8,7 @@ from itertools import chain, starmap
 import pygame
 import sys
 
+# VIEW_DIST is in tiles; other constants here are in pixels
 TILE_SIZE = 40
 VIEW_DIST = 8
 SCREEN_SIZE = TILE_SIZE * (VIEW_DIST * 2 + 1)
@@ -39,7 +40,18 @@ def main():
 
 
 def level_select_screen(screen, items):
+    """
+    Level select screen
+    Note: play is called as a part of this function
+    :param screen: the screen as Pygame surface
+    :param items: JSON object representing the contents of the LSS
+    :return: None
+    """
     def choose_item():
+        """
+        Choose the selected item
+        :return: True if it should exit level_select_screen
+        """
         selected_item1 = items[selection]
         selected_item_type = selected_item1["type"]
         if selected_item_type == "folder":
@@ -55,12 +67,14 @@ def level_select_screen(screen, items):
         return False
 
     def go_up():
+        """ Select the previous item in the list """
         nonlocal selection, offset
         if selection:
             selection -= 1
         offset = min(offset, selection)
 
     def go_down():
+        """ Select the next item in the list """
         nonlocal selection, offset
         selection += 1
         if selection == len(items):
@@ -71,8 +85,8 @@ def level_select_screen(screen, items):
     name_font = pygame.font.Font(None, 20)
     desc_font = pygame.font.Font(None, 30)
 
-    selection = 0
-    offset = 0
+    selection = 0  # Selected item index
+    offset = 0  # First shown item index
     while True:
         screen.fill(pygame.Color('#772953'))
         title_rendered = title_font.render('Ortal', True, pygame.Color('#FFFFFF'))
@@ -120,6 +134,7 @@ def level_select_screen(screen, items):
             if event.type in (pygame.MOUSEMOTION,
                               pygame.MOUSEBUTTONDOWN):
                 x, y = event.pos
+                # Coordinates within the menu
                 xwm, ywm = x - MENU_HOR_OFFSET, y - MENU_VERT_OFFSET
                 if 0 <= xwm < MENU_WIDTH and 0 <= ywm < MENU_HEIGHT:
                     selection1 = (offset + ywm) // MENU_ITEM_HEIGHT
@@ -377,36 +392,40 @@ class Ray:
 def _get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
     if left == right:
         return (x_min, x_max),
-    y1 = py - offset_y
+    y1 = py - offset_y  # y relative to the player
     left1 = y1 * left.ratio + offset_x
     right1 = y1 * right.ratio + offset_x
+    is_lower = y1 > 0
+    if not is_lower:
+        left1, right1 = right1, left1
     if left.is_lower == right.is_lower:
-        if left.is_lower == (y1 > 0):
+        if left.is_lower == is_lower:
             if left.ratio < right.ratio:
-                if y1 > 0:
-                    return (int(left1), int(right1)),
-                else:
-                    return (int(right1), int(left1)),
-            elif y1 > 0:
-                return (x_min, int(right1)), (int(left1), x_max)
+                return (int(left1), int(right1)),
             else:
-                return (int(left1), x_max), (x_min, int(left1))
+                return (x_min, int(right1)), (int(left1), x_max)
         elif left.ratio < right.ratio:
             return ()
         else:
             return (x_min, x_max),
     elif left.is_lower:
-        if y1 > 0:
-            return (int(left1), x_max),
-        else:
-            return (int(right1), x_max),
-    elif y1 > 0:
-        return (x_min, int(right1)),
+        return (int(left1), x_max),
     else:
-        return (x_min, int(left1)),
+        return (x_min, int(right1)),
 
 
 def get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
+    """
+
+    :param offset_x: the x coordinate of the center (player) on the screen
+    :param offset_y: the y coordinate of the center (player) on the screen
+    :param left: start of rendered region (clockwise)
+    :param right: end of rendered region (clockwise)
+    :param py: pixel y on screen
+    :param x_min: left tile end
+    :param x_max: right tile end
+    :return: None
+    """
     for line_start, line_end in _get_range_bounds(offset_x, offset_y, left, right, py, x_min, x_max):
         line_start1, line_end1 = max(line_start, x_min), min(line_end, x_max)
         if line_start1 < line_end1:
@@ -418,8 +437,20 @@ def get_range(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py:
 
 
 def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: int, left0: Ray, right0: Ray, rot: int = 0):
+    """
+    Render the part between left0 and right0, but only tile and tiles behind it
+    :param screen_settings: Screen settings object
+    :param tile: The closest to the player tile to render
+    :param x: tile X coordinate relative to the player
+    :param y: tile Y coordinate relative to the player
+    :param left0: start of rendered region (clockwise)
+    :param right0: end of rendered region (clockwise)
+    :param rot: rotation applied to tile when rendering it
+    :return: None
+    """
     x_on_screen = screen_settings.player_x + x
     y_on_screen = screen_settings.player_y + y
+    # Intersect the given region with the part that is rendered through tile
     if x or y:
         if not (0 <= x_on_screen < screen_settings.screen_x and 0 <= y_on_screen < screen_settings.screen_y):
             return
@@ -441,6 +472,8 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
     y_max = y_min + screen_settings.tile_size
     offset_x, offset_y = screen_settings.offsets
     if False and isinstance(tile.tile, WallTile):
+        # Old wall rendering code
+        # Can be activated by removing "False and"
         left_t = left.transpose()
         right_t = right.transpose()
         wall_c = pygame.Color('#772953')
@@ -457,15 +490,14 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
             for line_start, line_end in get_range_bounds(offset_x, offset_y, left, right, y_min, x_min, x_max):
                 pygame.draw.line(screen_settings.screen, wall_c, (line_start, y_min), (line_end, y_min))
         return
+    # Render the tile
     texture = tile.tile.get_texture(screen_settings.tile_size, rot)
     for pyr, pya in enumerate(range(y_min, y_max)):
-        # for pxa in get_range(offset_x, offset_y, left, right, pya, x_min, x_max):
-        #     screen_settings.screen.set_at((pxa, pya),
-        #                                   texture.get_at((pxa - screen_settings.tile_size * x_on_screen, pyr)))
         for start, end in get_range_bounds(offset_x, offset_y, left, right, pya, x_min, x_max):
             screen_settings.screen.blit(texture,
                                         (start, pya, end - start, 1),
                                         (start - screen_settings.tile_size * x_on_screen, pyr, end - start, 1))
+    # Recursively render the tiles behind it
     if tile.tile.see_through:
         if y >= 0:
             render_part(screen_settings, tile.get_neighbor(0).rotate(2), x, y + 1, left, right, 0)
@@ -482,12 +514,25 @@ def render(screen_settings, player):
 
 
 def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_player, on_win=lambda: None):
+    """
+    Move a tile or, if it's empty, remove it
+    :param tile: tile to be moved
+    :param changed_list: List of tiles changed in this move
+    :param moving_list: List of tiles moving in this move
+    :param remove_list: List of tiles to remove in this move
+    :param is_player: Whether the tile is a player
+    :param on_win: Callback if the player won
+    :return: True if (re)moved successfully
+    """
+    # Prevent same tile from being moved twice in one move
     if tile.tile.is_moving:
         return False
     tile.tile.is_moving = True
     moving_list.append(tile.tile)
+    # Check if this can be moved
     if not isinstance(tile.tile, (PlayerTile if is_player else (EmptyTile, PortalTile))):
         return False
+    # Next tiles to be (re)moved (they're the same for players, but different for portals)
     next_tile1 = tile.get_neighbor(2)
     next_tile2 = tile.get_neighbor(6)
     if isinstance(tile.tile, EmptyTile):
@@ -496,12 +541,15 @@ def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_pla
         return True
     if isinstance(next_tile1.tile, WallTile) or isinstance(next_tile2.tile, WallTile):
         return False  # to avoid error later
+    # Insert a tile in the place the player or portal is leaving
+    # (in the latter case, it leaves two tiles, but one of them is where the one that pushed it goes)
     new_empty_tile = TileRotation(EmptyTile(), 0)
     new_empty_tile.tile.neighbors = [None, None, None, None]
     new_empty_tile.set_neighbor_mutual(0, tile.get_neighbor(4), changed_list)
     new_empty_tile.set_neighbor_mutual(1, tile.get_neighbor(5), changed_list)
     new_empty_tile.set_neighbor_mutual(2, tile.rotate(4), changed_list)
     new_empty_tile.set_neighbor_mutual(3, tile.get_neighbor(3), changed_list)
+    # Change lateral links
     tile.set_neighbor_mutual(1, next_tile1.get_neighbor(1), changed_list)
     tile.set_neighbor_mutual(7, next_tile2.get_neighbor(7), changed_list)
     if isinstance(tile.tile, PlayerTile):
@@ -510,6 +558,7 @@ def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_pla
         return move_tile(next_tile1, changed_list, moving_list, remove_list, False)
     tile.set_neighbor_mutual(3, next_tile1.get_neighbor(-1), changed_list)
     tile.set_neighbor_mutual(5, next_tile2.get_neighbor(1), changed_list)
+    # Push
     return (move_tile(next_tile1, changed_list, moving_list, remove_list, False) and
             move_tile(next_tile2, changed_list, moving_list, remove_list, False))
 
@@ -534,6 +583,11 @@ def move_player(player, all_set, on_win):
 
 
 def play(screen, level_fn):
+    """
+    :param screen: the screen as Pygame surface
+    :param level_fn: Level filename
+    :return: None
+    """
     def on_win():
         nonlocal player_won
         player_won = True
@@ -550,6 +604,7 @@ def play(screen, level_fn):
     player_i = 0
     player = players[player_i]
     tiles_set = set(tiles_list)
+    del tiles_list
     changed = True
     while True:
         if changed:
