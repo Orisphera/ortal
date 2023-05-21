@@ -55,9 +55,11 @@ def level_select_screen(screen, items):
         selected_item1 = items[selection]
         selected_item_type = selected_item1["type"]
         if selected_item_type == "folder":
-            level_select_screen(screen, [{"name": "..",
-                                          "desc_fn": selected_item1["desc_fn"],
-                                          "type": "back"}] + selected_item1["contents"])
+            level_select_screen(screen, [{
+                "name": "..",
+                "desc_fn": selected_item1["desc_fn"],
+                "type": "back"
+            }] + selected_item1["contents"])
         elif selected_item_type == "level":
             play(screen, 'levels/' + selected_item1["fn"])
         elif selected_item_type == "back":
@@ -94,13 +96,22 @@ def level_select_screen(screen, items):
         title_rect.top = 15
         title_rect.left = MENU_HOR_OFFSET
         screen.blit(title_rendered, title_rect)
-        screen.fill(pygame.Color('#000000'), pygame.Rect(MENU_HOR_OFFSET, MENU_VERT_OFFSET, MENU_WIDTH, MENU_HEIGHT))
-        screen.fill(pygame.Color('#FF0000'), pygame.Rect(MENU_HOR_OFFSET,
-                                                         MENU_VERT_OFFSET + (selection - offset) * MENU_ITEM_HEIGHT,
-                                                         MENU_WIDTH, MENU_ITEM_HEIGHT))
-        for menu_item_top, menu_item in zip(range(MENU_VERT_OFFSET, MENU_VERT_OFFSET + MENU_HEIGHT, MENU_ITEM_HEIGHT),
-                                            items[offset:]):
-            name_rendered = name_font.render(menu_item["name"], True, pygame.Color('#FFFFFF'))
+        screen.fill(pygame.Color('#000000'), pygame.Rect(
+            MENU_HOR_OFFSET, MENU_VERT_OFFSET, MENU_WIDTH, MENU_HEIGHT
+        ))
+        screen.fill(pygame.Color('#FF0000'), pygame.Rect(
+            MENU_HOR_OFFSET,
+            MENU_VERT_OFFSET + (selection - offset) * MENU_ITEM_HEIGHT,
+            MENU_WIDTH,
+            MENU_ITEM_HEIGHT
+        ))
+        for menu_item_top, menu_item in zip(range(
+                MENU_VERT_OFFSET,
+                MENU_VERT_OFFSET + MENU_HEIGHT,
+                MENU_ITEM_HEIGHT
+        ), items[offset:]):
+            name_rendered = name_font.render(menu_item["name"], True,
+                                             pygame.Color('#FFFFFF'))
             name_rect = name_rendered.get_rect()
             name_offset = (MENU_ITEM_HEIGHT - name_rect.height) // 2
             name_rect.top = menu_item_top + name_offset
@@ -149,7 +160,8 @@ def level_select_screen(screen, items):
                                     offset -= 1
                             elif event.button == 5:
                                 if len(items) > MENU_ITEMS_SHOWN:
-                                    offset = min(offset + 1, len(items) - MENU_ITEMS_SHOWN)
+                                    offset = min(offset + 1,
+                                                 len(items) - MENU_ITEMS_SHOWN)
 
 
 class Tile:
@@ -208,7 +220,8 @@ class WallTile(Tile):
         offset_rng = random.Random(1)
         for c in range(128, 0, -40):
             for x in range(offset_rng.randint(-10, 0), size, 10):
-                pygame.draw.rect(ans, (c, c, c), pygame.Rect(x + 1, y + 1, 7, 3), 0, 1)
+                pygame.draw.rect(ans, (c, c, c), pygame.Rect(x + 1, y + 1, 7, 3),
+                                 0, 1)
             y += 5
         ans = pygame.transform.rotate(ans, 90 * rot)
         # ans.fill(pygame.Color("#772953"))
@@ -227,7 +240,8 @@ class PortalTile(Tile):
         ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#000000'))
         pygame.draw.rect(ans, pygame.Color('#FFFFFF'), ans.get_rect(), 2)
-        pygame.draw.circle(ans, pygame.Color('#1010FF'), (size // 2, size // 2), size // 2, 2)
+        pygame.draw.circle(ans, pygame.Color('#1010FF'), (size // 2, size // 2),
+                           size // 2, 2)
         return ans
 
 
@@ -238,7 +252,8 @@ class PlayerTile(Tile):
         ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#772953'))
         pygame.draw.rect(ans, pygame.Color('#FFFFFF'), ans.get_rect(), 2)
-        pygame.draw.circle(ans, pygame.Color('#000000'), (size // 2, size // 2), 5)
+        pygame.draw.circle(
+            ans, pygame.Color('#000000'), (size // 2, size // 2), 5)
         return ans
 
 
@@ -249,7 +264,8 @@ class GoalTile(Tile):
         ans = Tile.get_texture(size, rot)
         ans.fill(pygame.Color('#202020'))
         pygame.draw.rect(ans, pygame.Color('#F0F0F0'), ans.get_rect(), 2)
-        pygame.draw.circle(ans, pygame.Color('#FFFFFF'), (size // 2, size // 2), 5)
+        pygame.draw.circle(
+            ans, pygame.Color('#FFFFFF'), (size // 2, size // 2), 5)
         return ans
 
 
@@ -273,7 +289,8 @@ class TileRotation:
         if self.tile.new_neighbors is None:
             self.tile.new_neighbors = self.tile.neighbors[:]
             changed_list.append(self.tile)
-        self.tile.new_neighbors[self.convert_neighbor_i(neighbor_i)] = new_neighbor
+        self.tile.new_neighbors[self.convert_neighbor_i(neighbor_i)] = \
+            new_neighbor
 
     def set_neighbor_mutual(self, neighbor_i, new_neighbor, changed_list):
         self.set_neighbor1w(neighbor_i, new_neighbor, changed_list)
@@ -281,26 +298,32 @@ class TileRotation:
             new_neighbor.set_neighbor1w(0, self.rotate(neighbor_i), changed_list)
 
     def rotate(self, d_rot):
-        return TileRotation(self.tile, (self.rotation + d_rot) % self.tile.neighbors_n)
+        return TileRotation(self.tile,
+                            (self.rotation + d_rot) % self.tile.neighbors_n)
 
     def verify(self, all_set):
         neighbor = self.get_neighbor(0)
         if not isinstance(neighbor.tile, WallTile):
             if neighbor.get_neighbor(0) != self:
-                raise ValueError(f'incorrect connectivity: {self} -> {neighbor} -> {neighbor.get_neighbor(0)}')
+                raise ValueError(f'incorrect connectivity: {self} -> {neighbor}'
+                                 f' -> {neighbor.get_neighbor(0)}')
             if not (all_set is None or neighbor.tile in all_set):
-                raise ValueError(f'removed tile {neighbor.tile} used from {self.tile}')
+                raise ValueError(f'removed tile {neighbor.tile} used from'
+                                 f' {self.tile}')
 #        return
         neighbor1 = self.get_neighbor(1)
         if not isinstance(neighbor1.tile, WallTile):
             if neighbor1 == self:
-                raise VertexSingularityWarning(f'90 degree CS in vertex near {self}')
+                raise VertexSingularityWarning(
+                    f'90 degree CS in vertex near {self}')
             neighbor2 = neighbor1.get_neighbor(1)
             if neighbor2 == self:
-                raise VertexSingularityWarning(f'180 degree CS in vertex near {self}')
+                raise VertexSingularityWarning(
+                    f'180 degree CS in vertex near {self}')
             if not isinstance(neighbor2.tile, WallTile):
                 neighbor3 = neighbor2.get_neighbor(1)
-                if not isinstance(neighbor3.tile, WallTile) and neighbor3.get_neighbor(1) != self:
+                if (not isinstance(neighbor3.tile, WallTile) and
+                        neighbor3.get_neighbor(1) != self):
                     raise VertexSingularityWarning(f'CS in vertex near {self}')
 
 
@@ -317,7 +340,8 @@ def load_level(fn: str):
             tiles = dict()
             neighbors_names = dict()
             for line in f.readlines():
-                tile_name, tile_type, tile_data = line.rstrip('\n').split(maxsplit=2)
+                tile_name, tile_type, tile_data = \
+                    line.rstrip('\n').split(maxsplit=2)
                 if tile_name in tiles.keys():
                     raise ValueError('repeating tile names')
                 tiles[tile_name] = {'empty': EmptyTile,
@@ -329,7 +353,8 @@ def load_level(fn: str):
                     players.append(TileRotation(tiles[tile_name], 0))
                 neighbors_names[tile_name] = tile_data.split()
             for tile_name, tile in tiles.items():
-                tile.neighbors = [TileRotation(tiles[neighbor_name[1:]], int(neighbor_name[0]))
+                tile.neighbors = [TileRotation(tiles[neighbor_name[1:]],
+                                               int(neighbor_name[0]))
                                   if neighbor_name[1:] in tiles.keys() else wall
                                   for neighbor_name in neighbors_names[tile_name]]
             for tile in tiles.values():
@@ -347,16 +372,17 @@ def verify(tiles_set):
 @dataclass
 class ScreenSettings:
     screen: pygame.Surface
-    tile_size: int
-    screen_x: int
-    screen_y: int
-    player_x: int
-    player_y: int
+    tile_size: int  # in pixels
+    screen_x: int  # in tiles
+    screen_y: int  # in tiles
+    player_x: int  # in tiles
+    player_y: int  # in tiles
 
     @property
     def offsets(self):
         tile_offset = Fraction(self.tile_size - 1, 2)
-        return self.player_x * self.tile_size + tile_offset, self.player_x * self.tile_size + tile_offset
+        return (self.player_x * self.tile_size + tile_offset,
+                self.player_y * self.tile_size + tile_offset)
 
 
 class Ray:
@@ -379,8 +405,11 @@ class Ray:
             return True
         if self == other2:
             return False
-        r0, r1, r2 = sorted((self, other1, other2), key=lambda r: (r.is_lower, r.ratio))
-        return ((r0 is self) or (r1 is other1) or (r2 is other2)) and (not ((r0 is self) and (r1 is other1)))
+        r0, r1, r2 = sorted((self, other1, other2),
+                            key=lambda r: (r.is_lower, r.ratio))
+        # This evaluates to True for odd/negative permutations
+        return (((r0 is self) or (r1 is other1) or (r2 is other2)) and
+                not ((r0 is self) and (r1 is other1)))
 
     def transpose(self):
         sign = 1 if self.is_lower else -1
@@ -389,7 +418,8 @@ class Ray:
         return Ray(sign, sign * self.ratio)
 
 
-def _get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
+def _get_range_bounds(offset_x: Fraction, offset_y: Fraction,
+                      left: Ray, right: Ray, py: int, x_min: int, x_max: int):
     if left == right:
         return (x_min, x_max),
     y1 = py - offset_y  # y relative to the player
@@ -414,7 +444,8 @@ def _get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: 
         return (x_min, int(right1)),
 
 
-def get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
+def get_range_bounds(offset_x: Fraction, offset_y: Fraction,
+                     left: Ray, right: Ray, py: int, x_min: int, x_max: int):
     """
 
     :param offset_x: the x coordinate of the center (player) on the screen
@@ -426,17 +457,22 @@ def get_range_bounds(offset_x: Fraction, offset_y: Fraction, left: Ray, right: R
     :param x_max: right tile end
     :return: None
     """
-    for line_start, line_end in _get_range_bounds(offset_x, offset_y, left, right, py, x_min, x_max):
+    for line_start, line_end in _get_range_bounds(offset_x, offset_y,
+                                                  left, right, py, x_min, x_max):
         line_start1, line_end1 = max(line_start, x_min), min(line_end, x_max)
         if line_start1 < line_end1:
             yield line_start1, line_end1
 
 
-def get_range(offset_x: Fraction, offset_y: Fraction, left: Ray, right: Ray, py: int, x_min: int, x_max: int):
-    return chain.from_iterable(starmap(range, get_range_bounds(offset_x, offset_y, left, right, py, x_min, x_max)))
+def get_range(offset_x: Fraction, offset_y: Fraction,
+              left: Ray, right: Ray, py: int, x_min: int, x_max: int):
+    return chain.from_iterable(starmap(range, get_range_bounds(offset_x, offset_y,
+                                                               left, right,
+                                                               py, x_min, x_max)))
 
 
-def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: int, left0: Ray, right0: Ray, rot: int = 0):
+def render_part(screen_settings: ScreenSettings, tile: TileRotation,
+                x: int, y: int, left0: Ray, right0: Ray, rot: int = 0):
     """
     Render the part between left0 and right0, but only tile and tiles behind it
     :param screen_settings: Screen settings object
@@ -452,7 +488,8 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
     y_on_screen = screen_settings.player_y + y
     # Intersect the given region with the part that is rendered through tile
     if x or y:
-        if not (0 <= x_on_screen < screen_settings.screen_x and 0 <= y_on_screen < screen_settings.screen_y):
+        if not (0 <= x_on_screen < screen_settings.screen_x and
+                0 <= y_on_screen < screen_settings.screen_y):
             return
         left1 = Ray(x * 2 + (1 if (y, x) < (0, 0) else -1),
                     y * 2 + (1 if (-x, y) < (0, 0) else -1))
@@ -493,27 +530,36 @@ def render_part(screen_settings: ScreenSettings, tile: TileRotation, x: int, y: 
     # Render the tile
     texture = tile.tile.get_texture(screen_settings.tile_size, rot)
     for pyr, pya in enumerate(range(y_min, y_max)):
-        for start, end in get_range_bounds(offset_x, offset_y, left, right, pya, x_min, x_max):
-            screen_settings.screen.blit(texture,
-                                        (start, pya, end - start, 1),
-                                        (start - screen_settings.tile_size * x_on_screen, pyr, end - start, 1))
+        for start, end in get_range_bounds(offset_x, offset_y, left, right,
+                                           pya, x_min, x_max):
+            screen_settings.screen.blit(
+                texture,
+                (start, pya, end - start, 1),
+                (start - screen_settings.tile_size * x_on_screen, pyr,
+                 end - start, 1)
+            )
     # Recursively render the tiles behind it
     if tile.tile.see_through:
         if y >= 0:
-            render_part(screen_settings, tile.get_neighbor(0).rotate(2), x, y + 1, left, right, 0)
+            render_part(screen_settings, tile.get_neighbor(0).rotate(2), x, y + 1,
+                        left, right, 0)
         if x >= 0:
-            render_part(screen_settings, tile.get_neighbor(1).rotate(1), x + 1, y, left, right, 1)
+            render_part(screen_settings, tile.get_neighbor(1).rotate(1), x + 1, y,
+                        left, right, 1)
         if y <= 0:
-            render_part(screen_settings, tile.get_neighbor(2).rotate(0), x, y - 1, left, right, 2)
+            render_part(screen_settings, tile.get_neighbor(2).rotate(0), x, y - 1,
+                        left, right, 2)
         if x <= 0:
-            render_part(screen_settings, tile.get_neighbor(3).rotate(3), x - 1, y, left, right, 3)
+            render_part(screen_settings, tile.get_neighbor(3).rotate(3), x - 1, y,
+                        left, right, 3)
 
 
 def render(screen_settings, player):
     render_part(screen_settings, player, 0, 0, Ray(1, 0), Ray(1, 0))
 
 
-def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_player, on_win=lambda: None):
+def move_tile(tile: TileRotation, changed_list, moving_list, remove_list,
+              is_player, on_win=lambda: None):
     """
     Move a tile or, if it's empty, remove it
     :param tile: tile to be moved
@@ -530,19 +576,23 @@ def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_pla
     tile.tile.is_moving = True
     moving_list.append(tile.tile)
     # Check if this can be moved
-    if not isinstance(tile.tile, (PlayerTile if is_player else (EmptyTile, PortalTile))):
+    if not isinstance(tile.tile, (PlayerTile if is_player
+                                  else (EmptyTile, PortalTile))):
         return False
-    # Next tiles to be (re)moved (they're the same for players, but different for portals)
+    # Next tiles to be (re)moved
+    # (they're the same for players, but different for portals)
     next_tile1 = tile.get_neighbor(2)
     next_tile2 = tile.get_neighbor(6)
     if isinstance(tile.tile, EmptyTile):
         tile.get_neighbor(0).set_neighbor_mutual(0, next_tile1, changed_list)
         remove_list.append(tile.tile)
         return True
-    if isinstance(next_tile1.tile, WallTile) or isinstance(next_tile2.tile, WallTile):
+    if (isinstance(next_tile1.tile, WallTile) or
+            isinstance(next_tile2.tile, WallTile)):
         return False  # to avoid error later
     # Insert a tile in the place the player or portal is leaving
-    # (in the latter case, it leaves two tiles, but one of them is where the one that pushed it goes)
+    # (in the latter case, it leaves two tiles,
+    # but one of them is where the one that pushed it goes)
     new_empty_tile = TileRotation(EmptyTile(), 0)
     new_empty_tile.tile.neighbors = [None, None, None, None]
     new_empty_tile.set_neighbor_mutual(0, tile.get_neighbor(4), changed_list)
@@ -555,11 +605,13 @@ def move_tile(tile: TileRotation, changed_list, moving_list, remove_list, is_pla
     if isinstance(tile.tile, PlayerTile):
         if isinstance(next_tile1.tile, GoalTile):
             on_win()
-        return move_tile(next_tile1, changed_list, moving_list, remove_list, False)
+        return move_tile(next_tile1,
+                         changed_list, moving_list, remove_list, False)
     tile.set_neighbor_mutual(3, next_tile1.get_neighbor(-1), changed_list)
     tile.set_neighbor_mutual(5, next_tile2.get_neighbor(1), changed_list)
     # Push
-    return (move_tile(next_tile1, changed_list, moving_list, remove_list, False) and
+    return (move_tile(next_tile1, changed_list, moving_list, remove_list, False)
+            and
             move_tile(next_tile2, changed_list, moving_list, remove_list, False))
 
 
@@ -567,7 +619,8 @@ def move_player(player, all_set, on_win):
     changed_list = []
     moving_list = []
     remove_list = []
-    success = move_tile(player, changed_list, moving_list, remove_list, True, on_win)
+    success = move_tile(player,
+                        changed_list, moving_list, remove_list, True, on_win)
     for tile in moving_list:
         tile.is_moving = False
     for tile in changed_list:
@@ -646,11 +699,14 @@ def play(screen, level_fn):
 
 
 def win_screen(screen):
-    pygame.draw.rect(screen, pygame.Color('#FFFFFF'), pygame.Rect((SCREEN_SIZE - WIN_WIDTH) // 2,
-                                                                  (SCREEN_SIZE - WIN_HEIGHT) // 2,
-                                                                  WIN_WIDTH,
-                                                                  WIN_HEIGHT))
-    string_rendered = pygame.font.Font(None, 50).render('You won!', True, pygame.Color('#000000'))
+    pygame.draw.rect(screen, pygame.Color('#FFFFFF'), pygame.Rect(
+        (SCREEN_SIZE - WIN_WIDTH) // 2,
+        (SCREEN_SIZE - WIN_HEIGHT) // 2,
+        WIN_WIDTH,
+        WIN_HEIGHT
+    ))
+    string_rendered = pygame.font.Font(None, 50).render('You won!', True,
+                                                        pygame.Color('#000000'))
     string_rect = string_rendered.get_rect()
     string_rect.top = (SCREEN_SIZE - string_rect.height) // 2
     string_rect.x = (SCREEN_SIZE - string_rect.width) // 2
