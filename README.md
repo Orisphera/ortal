@@ -8,7 +8,7 @@ It has walls, through which you can't see, and glass, through which you can, but
 The main feature of Ortal is special tiles called portals.
 When you go around a portal, you get to a different point; to get to the original point, you have to go around it one more time.
 You can move portals.
-You can learn more about portals in various theories in [this article](https://bit.ly/3bvL2AJ).
+You can learn more about portals in various theories in [this article](https://github.com/Orisphera/wiki/wiki/Portals (Orisphera's theory)).
 
 To allow for portals and compactification, Ortal stores the level as a 2D linked list, a format designed specifically for that purpose.
 The idea is that each tile stores a link to its neighbors.
